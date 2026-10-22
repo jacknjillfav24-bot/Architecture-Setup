@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+# Publishes the site for free at https://<owner>.github.io/<repo>/ on every push to main.
+# GitHub Pages must be turned on once: Settings → Pages → Source: "GitHub Actions".
+# Until then this workflow skips publishing instead of failing.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      enabled: ${{ steps.pages.outcome == 'success' }}
+    steps:
+      - id: pages
+        uses: actions/configure-pages@v6
+        continue-on-error: true
+
+      - if: steps.pages.outcome != 'success'
+        run: echo "::notice title=GitHub Pages is off::Turn it on in Settings → Pages → Source → GitHub Actions, then run this workflow again."
+
+      - if: steps.pages.outcome == 'success'
+        uses: actions/checkout@v7
+
+      - if: steps.pages.outcome == 'success'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - if: steps.pages.outcome == 'success'
+        run: npm ci && npm test && npm run build
+
+      - if: steps.pages.outcome == 'success'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

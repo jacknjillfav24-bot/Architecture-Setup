@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent World</title>
+    <meta
+      name="description"
+      content="A 2D world where a company of agents, with a Director, departments and teams, works together on projects."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%237a5fb5'/%3E%3Ccircle cx='10' cy='20' r='4' fill='%23fff'/%3E%3Ccircle cx='22' cy='20' r='4' fill='%23fff'/%3E%3Ccircle cx='16' cy='10' r='4' fill='%23ffd166'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Agent World</h1>
+        <p class="tagline">
+          A small company of agents: a Director, four departments and the teams
+          inside them.
+        </p>
+      </div>
+      <div class="controls">
+        <button id="pause" type="button" aria-pressed="false">Pause</button>
+        <div class="speed" role="group" aria-label="Speed">
+          <button type="button" data-speed="1" aria-pressed="true">1×</button>
+          <button type="button" data-speed="2" aria-pressed="false">2×</button>
+          <button type="button" data-speed="4" aria-pressed="false">4×</button>
+        </div>
+        <label class="toggle"
+          ><input id="hierarchy" type="checkbox" /> Show who reports to
+          whom</label
+        >
+        <button id="reset" type="button">Restart</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="world-wrap" aria-label="The world">
+        <canvas
+          id="world"
+          role="img"
+          aria-label="Top-down map of the company: Headquarters, a lounge and an archive at the top, and the Research, Design, Engineering and Quality departments at the bottom. Agents walk between them. The activity list describes what happens."
+        ></canvas>
+        <p class="legend">
+          <span><b class="mark star">★</b> Director</span>
+          <span><b class="mark ring"></b> Department head</span>
+          <span><b class="mark worker"></b> Worker</span>
+          <span><b class="mark envelope">✉</b> Message</span>
+          <span>Notes on each board = that team's open tasks</span>
+          <span>Click an agent to follow them</span>
+        </p>
+      </section>
+
+      <aside class="panel">
+        <section class="card" aria-labelledby="ai-title">
+          <h2 id="ai-title">AI brain</h2>
+          <p id="ai-status">Checking whether this device can run the AI…</p>
+          <div id="ai-setup" class="ai-setup">
+            <label for="ai-model">Model</label>
+            <select id="ai-model"></select>
+            <button id="ai-start" class="primary" type="button" disabled>
+              Turn on AI brain
+            </button>
+            <p class="note">
+              Free and private: the AI runs on this computer and what the agents
+              say never leaves it. The model is downloaded once from Hugging
+              Face and your browser keeps it.
+            </p>
+          </div>
+          <div id="ai-progress" hidden>
+            <progress id="ai-progress-bar" max="1" value="0"></progress>
+            <p id="ai-progress-text" class="note"></p>
+          </div>
+          <button id="ai-stop" type="button" hidden>
+            Switch back to rules
+          </button>
+        </section>
+
+        <section class="card" aria-labelledby="stats-title">
+          <h2 id="stats-title">Company</h2>
+          <div id="stats" class="stats"></div>
+        </section>
+
+        <section class="card" aria-labelledby="projects-title">
+          <h2 id="projects-title">Projects</h2>
+          <ul id="projects" class="projects"></ul>
+        </section>
+
+        <section class="card" aria-labelledby="inspector-title">
+          <h2 id="inspector-title">Selected agent</h2>
+          <label class="sr-only" for="agent-picker">Choose an agent</label>
+          <select id="agent-picker"></select>
+          <div id="inspector" class="inspector"></div>
+        </section>
+
+        <section class="card" aria-labelledby="log-title">
+          <h2 id="log-title">Activity</h2>
+          <ol id="log" class="log" aria-live="off"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <footer>
+      Everything runs in your browser. This page has no accounts, cookies or
+      analytics, and costs nothing to use.
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
